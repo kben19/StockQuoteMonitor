@@ -3,7 +3,6 @@
  */
 class Controller implements java.awt.event.ActionListener {
 
-    //Joe: Controller has Model and View hardwired in
     Model model;
     View view;
 
