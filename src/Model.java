@@ -13,7 +13,7 @@ public class Model {
 
     public Model(){
 
-        System.out.println("Model()");
+        System.out.println("Model initialized");
         StockQuoteWS SQservice = new StockQuoteWS();
         SQPort = SQservice.getStockQuoteWSSOAP11PortHttp();
         fieldNamesList = SQPort.getFieldNames().getReturn();
@@ -29,11 +29,15 @@ public class Model {
         SQData.add(myList);
     }
 
+    public void removeData(int index) {
+        SQData.remove(index);
+    }
+
     public List getFieldNames(){
         return fieldNamesList;
     }
 
-    public ArrayList<ArrayList<Object>> getQuote(){
+    public ArrayList<ArrayList<Object>> getStockQuote(){
         return SQData;
     }
 

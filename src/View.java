@@ -4,39 +4,41 @@
 import java.awt.*;
 import java.awt.event.WindowEvent;	//for CloseListener()
 import java.awt.event.WindowAdapter;	//for CloseListener()
-import java.awt.event.ActionListener;	//for addController()
 import javax.swing.JTable;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+
+import javax.swing.ListSelectionModel;
+
 import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 
 class View {
 
     //class attributes
     private TextField myTextField;
-    private Button button;
+    private Button addMonitorButton;
+    private Button removeMonitorButton;
     private Model myModel;
     private JTable table;
-
-    private Object[][] data = {};
-    private Object[] columnNames;
+    private Controller myController;
 
     View(Model aModel) {
-        System.out.println("View()");
+        System.out.println("View initialized");
         myModel = aModel;
 
         //local attributes
         Frame frame = new Frame("Stock Quote Service");
-        JPanel panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout());
-        panel1.add(new Label("Symbol:"));
+        JPanel header = new JPanel();
+        header.setLayout(new FlowLayout());
+        header.add(new Label("Symbol:"));
 
         myTextField = new TextField(5);
-        panel1.add(myTextField);
+        header.add(myTextField);
 
-        button = new Button("Add");
-        panel1.add(button);
+        addMonitorButton = new Button("Add");
+        header.add(addMonitorButton);
 
         // Get field names from model
         List aList = myModel.getFieldNames();
@@ -47,16 +49,31 @@ class View {
         }
 
         // Initialize table
-        table = new JTable(new DefaultTableModel(columnNames, 0));
-        table.setEnabled(false);    //non writable
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(new BorderLayout());
-        panel2.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        panel2.add(table, BorderLayout.CENTER);
+        table = new JTable(new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                //make cells non-editable
+                return false;
+            }
+        });
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    //allow only one selection at a time
+        table.setRowSelectionAllowed(true);
+        table.setColumnSelectionAllowed(false);
 
+        JPanel body = new JPanel();
+        body.setLayout(new BorderLayout());
+        body.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        body.add(table, BorderLayout.CENTER);
 
-        frame.add(panel1, BorderLayout.NORTH);
-        frame.add(panel2, BorderLayout.CENTER);
+        JPanel footer = new JPanel();
+        footer.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        removeMonitorButton = new Button("Remove");
+        footer.add(removeMonitorButton);
+
+        frame.add(header, BorderLayout.NORTH);
+        frame.add(body, BorderLayout.CENTER);
+        frame.add(footer, BorderLayout.SOUTH);
         frame.addWindowListener(new CloseListener());
         frame.setSize(600,300);
         frame.setLocation(100,100);
@@ -65,13 +82,17 @@ class View {
     } //View()
 
     public String getTextField(){
-        return myTextField.getText();
+        return this.myTextField.getText();
+    }
+
+    public int getSelectedRow() {
+        return this.table.getSelectedRow();
     }
 
     // Called from the Model
     public void update() {
         // Get latest stock quote data
-        ArrayList<ArrayList<Object>> aList = myModel.getQuote();
+        ArrayList<ArrayList<Object>> aList = myModel.getStockQuote();
         Object[][] data = new String[aList.size()][4];
 
         // Clear table row data
@@ -89,14 +110,21 @@ class View {
 
     } //update()
 
-    public void addModel(Model m){
-        myModel = m;
-    }
 
-
-    public void addController(ActionListener controller){
+    public void addController(Controller controller) {
         System.out.println("View      : adding controller");
-        button.addActionListener(controller);	//add listener to button using controller class
+
+        myController = controller;
+
+        //add listener for adding monitor
+        addMonitorButton.addActionListener((ActionEvent e) -> {
+            myController.addMonitor();
+        });
+
+        //add listener for removing monitor
+        removeMonitorButton.addActionListener((ActionEvent e) -> {
+            myController.removeMonitor();
+        });
     } //addController()
 
     public static class CloseListener extends WindowAdapter {
