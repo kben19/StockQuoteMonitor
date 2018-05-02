@@ -2,10 +2,11 @@
  * Created by benzali on 5/1/2018.
  */
 import stockquoteservice.*;
+import ObserverPackage.Subject;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Model {
+public class Model extends Subject {
 
     private List fieldNamesList;
     private ArrayList<ArrayList<Object>> SQData = new ArrayList<ArrayList<Object>>();
@@ -27,10 +28,14 @@ public class Model {
             myList.add(quote);
         }
         SQData.add(myList);
+
+        notifyObservers();
     }
 
     public void removeData(int index) {
         SQData.remove(index);
+
+        notifyObservers();
     }
 
     public List getFieldNames(){

@@ -1,20 +1,19 @@
 /**
  * Created by benzali on 5/1/2018.
  */
+import ObserverPackage.Observer;
 import java.awt.*;
 import java.awt.event.WindowEvent;	//for CloseListener()
 import java.awt.event.WindowAdapter;	//for CloseListener()
 import javax.swing.JTable;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
-
 import javax.swing.ListSelectionModel;
-
+import java.util.List;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
-class View {
+class View implements Observer {
 
     //class attributes
     private TextField myTextField;
@@ -89,8 +88,8 @@ class View {
         return this.table.getSelectedRow();
     }
 
-    // Called from the Model
-    public void update() {
+    @Override
+    public void update() {      //called every time observers receive notification from subject
         // Get latest stock quote data
         ArrayList<ArrayList<Object>> aList = myModel.getStockQuote();
         Object[][] data = new String[aList.size()][4];
@@ -106,10 +105,7 @@ class View {
             }
             model.addRow(data[i]);
         }
-
-
-    } //update()
-
+    }
 
     public void addController(Controller controller) {
         System.out.println("View      : adding controller");
