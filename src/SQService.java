@@ -1,6 +1,4 @@
-/**
- * Created by benzali on 5/1/2018.
- */
+
 public class SQService {
 
     public SQService() {
@@ -13,6 +11,9 @@ public class SQService {
         Controller myController = new Controller();
         myController.addModel(myModel);
         myController.addView(myView);
+
+        //attach observer
+        myModel.attach(myView);
 
         //tell View about Controller
         myView.addController(myController);

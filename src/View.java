@@ -1,17 +1,18 @@
-/**
- * Created by benzali on 5/1/2018.
- */
+
 import ObserverPackage.Observer;
 import java.awt.*;
-import java.awt.event.WindowEvent;	//for CloseListener()
-import java.awt.event.WindowAdapter;	//for CloseListener()
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JTable;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.event.ActionEvent;
+
 
 class View implements Observer {
 
@@ -25,14 +26,18 @@ class View implements Observer {
 
     View(Model aModel) {
         System.out.println("View initialized");
+        StockMouseListener stockMouseListener = new StockMouseListener();
         myModel = aModel;
 
         //local attributes
         Frame frame = new Frame("Stock Quote Service");
+
+        //create header
         JPanel header = new JPanel();
         header.setLayout(new FlowLayout());
         header.add(new Label("Symbol:"));
 
+        //add text field to input symbols
         myTextField = new TextField(5);
         header.add(myTextField);
 
@@ -58,6 +63,7 @@ class View implements Observer {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    //allow only one selection at a time
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
+        table.addMouseListener(stockMouseListener);
 
         JPanel body = new JPanel();
         body.setLayout(new BorderLayout());
@@ -68,12 +74,14 @@ class View implements Observer {
         footer.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         removeMonitorButton = new Button("Remove");
+        removeMonitorButton.setEnabled(false);
         footer.add(removeMonitorButton);
 
         frame.add(header, BorderLayout.NORTH);
         frame.add(body, BorderLayout.CENTER);
         frame.add(footer, BorderLayout.SOUTH);
         frame.addWindowListener(new CloseListener());
+        frame.addMouseListener(stockMouseListener);
         frame.setSize(600,300);
         frame.setLocation(100,100);
         frame.setVisible(true);
@@ -86,6 +94,14 @@ class View implements Observer {
 
     public int getSelectedRow() {
         return this.table.getSelectedRow();
+    }
+
+    public void updateRemoveButton() {
+        if (getSelectedRow() == -1) {
+            removeMonitorButton.setEnabled(false);
+        } else {
+            removeMonitorButton.setEnabled(true);
+        }
     }
 
     @Override
@@ -105,6 +121,7 @@ class View implements Observer {
             }
             model.addRow(data[i]);
         }
+        updateRemoveButton();
     }
 
     public void addController(Controller controller) {
@@ -130,4 +147,10 @@ class View implements Observer {
         } //windowClosing()
     } //CloseListener
 
+    public class StockMouseListener extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            updateRemoveButton();
+        }
+    }
 } //View
