@@ -7,11 +7,13 @@ import stockquoteservice.*;
 import ObserverPackage.Subject;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Model extends Subject {
 
     private List fieldNamesList;
-    private ArrayList<ArrayList<Object>> SQData = new ArrayList<ArrayList<Object>>();
+    private ArrayList<ArrayList<Object>> SQData = new ArrayList<>();
     private StockQuoteWSPortType SQPort;
 
     public Model(){
@@ -21,6 +23,14 @@ public class Model extends Subject {
         SQPort = SQservice.getStockQuoteWSSOAP11PortHttp();
         fieldNamesList = SQPort.getFieldNames().getReturn();
 
+        Timer updateTimer = new Timer();
+
+        updateTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //DISINIIII
+            }
+        }, 60 * 1000 * 5 );
     } //Model()
 
     public void addData(String symbol){
@@ -59,5 +69,4 @@ public class Model extends Subject {
     public List getFieldNames(){
         return fieldNamesList;
     }
-
 } //Model
