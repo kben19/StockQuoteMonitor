@@ -25,10 +25,8 @@ public class Model extends Subject {
 
     public void addData(String symbol){
         List aList = SQPort.getQuote(symbol);
-        ArrayList<Object> myList = new ArrayList<Object>();
-        for (Object quote : aList){
-            myList.add(quote);
-        }
+        ArrayList<Object> myList = convertList(aList);
+
         SQData.add(myList);
 
         notifyObservers(SQData);
@@ -40,12 +38,26 @@ public class Model extends Subject {
         notifyObservers(SQData);
     }
 
-    public List getFieldNames(){
-        return fieldNamesList;
+    public void updateData(){
+        if (SQData.size() > 0){
+            for (int i = 0; i < SQData.size(); i++){
+                List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
+                ArrayList<Object> temp = convertList(aList);
+                SQData.set(i, temp);
+            }
+        }
     }
 
-    public ArrayList<ArrayList<Object>> getStockQuote(){
-        return SQData;
+    private ArrayList<Object> convertList(List aList){
+        ArrayList<Object> myList = new ArrayList<Object>();
+        for (Object quote : aList){
+            myList.add(quote);
+        }
+        return myList;
+    }
+
+    public List getFieldNames(){
+        return fieldNamesList;
     }
 
 } //Model
