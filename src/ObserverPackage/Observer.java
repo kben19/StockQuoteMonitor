@@ -5,6 +5,8 @@
 
 package ObserverPackage;
 
+import java.util.ArrayList;
+
 public interface Observer {
-    void update();
+    void update(ArrayList<ArrayList<Object>> anObject);
 }
