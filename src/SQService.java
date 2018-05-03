@@ -1,3 +1,7 @@
+/**
+ * authors: Andre Christian & Kelvin Benzali
+ * last modified: 3 May 2018
+ */
 
 public class SQService {
 

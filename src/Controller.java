@@ -1,5 +1,6 @@
 /**
- * Created by benzali on 5/1/2018.
+ * authors: Andre Christian & Kelvin Benzali
+ * last modified: 3 May 2018
  */
 
 class Controller implements java.awt.event.ActionListener{
