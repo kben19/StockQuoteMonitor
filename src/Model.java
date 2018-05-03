@@ -29,13 +29,13 @@ public class Model extends Subject {
         }
         SQData.add(myList);
 
-        notifyObservers();
+        notifyObservers(SQData);
     }
 
     public void removeData(int index) {
         SQData.remove(index);
 
-        notifyObservers();
+        notifyObservers(SQData);
     }
 
     public List getFieldNames(){

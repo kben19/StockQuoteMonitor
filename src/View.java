@@ -1,15 +1,12 @@
 
 import ObserverPackage.Observer;
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import javax.swing.JTable;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,14 +17,11 @@ class View implements Observer {
     private TextField myTextField;
     private Button addMonitorButton;
     private Button removeMonitorButton;
-    private Model myModel;
     private JTable table;
-    private Controller myController;
 
     View(Model aModel) {
         System.out.println("View initialized");
         StockMouseListener stockMouseListener = new StockMouseListener();
-        myModel = aModel;
 
         //local attributes
         Frame frame = new Frame("Stock Quote Service");
@@ -45,7 +39,7 @@ class View implements Observer {
         header.add(addMonitorButton);
 
         // Get field names from model
-        List aList = myModel.getFieldNames();
+        List aList = aModel.getFieldNames();
         Object[] columnNames = new Object[aList.size()];
 
         for (int i = 0; i < aList.size(); i++){
@@ -105,39 +99,32 @@ class View implements Observer {
     }
 
     @Override
-    public void update() {      //called every time observers receive notification from subject
+    public void update(ArrayList<ArrayList<Object>> anObject) {      //called every time observers receive notification from subject
         // Get latest stock quote data
-        ArrayList<ArrayList<Object>> aList = myModel.getStockQuote();
-        Object[][] data = new String[aList.size()][4];
+        Object[][] data = new String[anObject.size()][4];
 
         // Clear table row data
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
         // Insert all row data
-        for (int i = 0; i < aList.size(); i++){
+        for (int i = 0; i < anObject.size(); i++){
             for(int j = 0; j < 4; j++){
-                data[i][j] = aList.get(i).get(j);
+                data[i][j] = anObject.get(i).get(j);
             }
             model.addRow(data[i]);
         }
         updateRemoveButton();
     }
 
-    public void addController(Controller controller) {
+    public void addController(ActionListener controller) {
         System.out.println("View      : adding controller");
 
-        myController = controller;
-
         //add listener for adding monitor
-        addMonitorButton.addActionListener((ActionEvent e) -> {
-            myController.addMonitor();
-        });
+        addMonitorButton.addActionListener(controller);
 
         //add listener for removing monitor
-        removeMonitorButton.addActionListener((ActionEvent e) -> {
-            myController.removeMonitor();
-        });
+        removeMonitorButton.addActionListener(controller);
     } //addController()
 
     public static class CloseListener extends WindowAdapter {
