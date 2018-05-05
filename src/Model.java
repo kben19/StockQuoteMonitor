@@ -28,7 +28,6 @@ public class Model extends Subject {
         updateTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Model     : Updating quotes");
                 updateData();
             }
         }, 5 * 60 * 1000, 5 * 60 * 1000 );  //set a timer to run update every 5 minutes
@@ -74,11 +73,14 @@ public class Model extends Subject {
     }// checkData()
 
     public void updateData(){
+        System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
             List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
             ArrayList<Object> temp = convertList(aList);
             SQData.set(i, temp);
         }
+
+        notifyObservers(SQData);
     }// updateData
 
     private ArrayList<Object> convertList(List aList){
