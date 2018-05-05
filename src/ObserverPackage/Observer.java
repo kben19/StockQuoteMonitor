@@ -9,4 +9,5 @@ import java.util.ArrayList;
 
 public interface Observer {
     void update(ArrayList<ArrayList<Object>> anObject);
-}
+    void message(String title, String message, int type);
+}// Observer

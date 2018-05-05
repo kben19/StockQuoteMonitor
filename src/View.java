@@ -6,10 +6,8 @@
 import ObserverPackage.Observer;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.JTable;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.ListSelectionModel;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,13 +20,14 @@ class View implements Observer {
     private Button addMonitorButton;
     private Button removeMonitorButton;
     private JTable table;
+    private Frame frame;
 
     View(Model aModel) {
         System.out.println("View initialized");
         StockMouseListener stockMouseListener = new StockMouseListener();
 
         //local attributes
-        Frame frame = new Frame("Stock Quote Service");
+        frame = new Frame("Stock Quote Service");
 
         //create header
         JPanel header = new JPanel();
@@ -94,13 +93,13 @@ class View implements Observer {
         return this.table.getSelectedRow();
     }
 
-    public void updateRemoveButton() {
+    private void updateRemoveButton() {
         if (getSelectedRow() == -1) {
             removeMonitorButton.setEnabled(false);
         } else {
             removeMonitorButton.setEnabled(true);
         }
-    }
+    }// updateRemoveButton()
 
     @Override
     public void update(ArrayList<ArrayList<Object>> anObject) {      //called every time observers receive notification from subject
@@ -119,7 +118,13 @@ class View implements Observer {
             model.addRow(data[i]);
         }
         updateRemoveButton();
-    }
+    }// update()
+
+    @Override
+    public void message(String title, String message, int type){
+        System.out.println("View      : Show message dialog");
+        JOptionPane.showMessageDialog(frame, message, title, type);
+    }// message()
 
     public void addController(ActionListener controller) {
         System.out.println("View      : adding controller");
@@ -143,5 +148,5 @@ class View implements Observer {
         public void mouseClicked(MouseEvent e) {
             updateRemoveButton();
         }
-    }
+    }//StockMouseListener
 } //View

@@ -22,6 +22,6 @@ public class SQService {
         //tell View about Controller
         myView.addController(myController);
 
-    } //SQService
+    } //SQService()
 
 } //SQService

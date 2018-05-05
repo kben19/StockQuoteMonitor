@@ -18,15 +18,15 @@ class Controller implements java.awt.event.ActionListener{
         else if (e.getActionCommand().equals("Remove")){
             removeMonitor();
         }
-    }
+    }// actionPerformed()
 
     //invoked when a button is pressed
-    public void addMonitor() {
+    private void addMonitor() {
         System.out.println("Controller: Adding a monitor");
         model.addData(view.getTextField());
     }
 
-    public void removeMonitor() {
+    private void removeMonitor() {
         System.out.println("Controller: Removing a monitor");
         model.removeData(view.getSelectedRow());
     }

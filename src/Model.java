@@ -35,20 +35,43 @@ public class Model extends Subject {
 
     public void addData(String symbol){
         List aList = SQPort.getQuote(symbol);
-        ArrayList<Object> myList = convertList(aList);
+        if (checkData(symbol)){
+            System.out.println("Model     : Monitor cancelled");
+            dialogMessage(0, "Error", "Symbol is already exist", 2);
+        }
+        else if(aList.get(1).equals("Unset")) {
+            System.out.println("Model     : Monitor cancelled");
+            dialogMessage(0, "Error", "Symbol does not exist", 2);
+        }
+        else{
+            System.out.println("Model     : Monitor Added");
+            ArrayList<Object> myList = convertList(aList);
 
-        SQData.add(myList);
+            SQData.add(myList);
 
-        notifyObservers(SQData);
-    }
+            notifyObservers(SQData);
+        }
+
+
+    }// addData()
 
     public void removeData(int index) {
+        System.out.println("Model       : Monitor removed");
         SQData.remove(index);
 
         notifyObservers(SQData);
-    }
+    }// removeData()
 
-    public void updateData(){
+    private boolean checkData(String symbol){
+        for (ArrayList<Object> dataSymbol : SQData){
+            if(symbol.equals(dataSymbol.get(0))){
+                return true;
+            }
+        }
+        return false;
+    }// checkData()
+
+    private void updateData(){
         if (SQData.size() > 0){
             for (int i = 0; i < SQData.size(); i++){
                 List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
@@ -56,7 +79,7 @@ public class Model extends Subject {
                 SQData.set(i, temp);
             }
         }
-    }
+    }// updateData
 
     private ArrayList<Object> convertList(List aList){
         ArrayList<Object> myList = new ArrayList<Object>();

@@ -24,5 +24,9 @@ public abstract class Subject {
         for( Observer o : observers ) {
             o.update(anObject);
         }
-    }
-}
+    }// notifyObservers()
+
+    public void dialogMessage(int obs, String title, String message, int type){
+        observers.get(obs).message(title, message, type);
+    }// dialogMessage()
+}// Subject
