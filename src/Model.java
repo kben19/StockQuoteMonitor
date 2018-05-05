@@ -28,9 +28,11 @@ public class Model extends Subject {
         updateTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                //DISINIIII
+                System.out.println("Model: Updating quotes");
+                updateData();
             }
-        }, 60 * 1000 * 5 );
+        }, 5 * 60 * 1000, 5 * 60 * 1000 );  //set a timer to run update every 5 minutes
+
     } //Model()
 
     public void addData(String symbol){
@@ -49,17 +51,15 @@ public class Model extends Subject {
     }
 
     public void updateData(){
-        if (SQData.size() > 0){
-            for (int i = 0; i < SQData.size(); i++){
-                List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
-                ArrayList<Object> temp = convertList(aList);
-                SQData.set(i, temp);
-            }
+        for (int i = 0; i < SQData.size(); i++){
+            List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
+            ArrayList<Object> temp = convertList(aList);
+            SQData.set(i, temp);
         }
     }
 
     private ArrayList<Object> convertList(List aList){
-        ArrayList<Object> myList = new ArrayList<Object>();
+        ArrayList<Object> myList = new ArrayList<>();
         for (Object quote : aList){
             myList.add(quote);
         }
