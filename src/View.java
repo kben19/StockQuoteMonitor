@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.lang.reflect.Array;
+import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -21,15 +21,31 @@ class View implements Observer {
     private Button removeMonitorButton;
     private JTable table;
     private Frame frame;
+    private StockMouseListener stockMouseListener;
+
 
     View(Model aModel) {
         System.out.println("View initialized");
-        StockMouseListener stockMouseListener = new StockMouseListener();
+        stockMouseListener = new StockMouseListener();
 
         //local attributes
         frame = new Frame("Stock Quote Service");
 
-        //create header
+        JPanel header = renderHeader();
+        JPanel body = renderBody(aModel.getFieldNames());
+        JPanel footer = renderFooter();
+
+        frame.add(header, BorderLayout.NORTH);
+        frame.add(body, BorderLayout.CENTER);
+        frame.add(footer, BorderLayout.SOUTH);
+        frame.addWindowListener(new CloseListener());
+        frame.addMouseListener(stockMouseListener);
+        frame.setSize(600,300);
+        frame.setLocation(100,100);
+        frame.setVisible(true);
+    } //View()
+
+    private JPanel renderHeader() {
         JPanel header = new JPanel();
         header.setLayout(new FlowLayout());
         header.add(new Label("Symbol:"));
@@ -41,12 +57,16 @@ class View implements Observer {
         addMonitorButton = new Button("Add");
         header.add(addMonitorButton);
 
-        // Get field names from model
-        List aList = aModel.getFieldNames();
-        Object[] columnNames = new Object[aList.size()];
+        return header;
+    }
 
-        for (int i = 0; i < aList.size(); i++){
-            columnNames[i] = aList.get(i).toString();
+    private JPanel renderBody(List fieldNames) {
+        JPanel body = new JPanel();
+
+        String[] columnNames = new String[fieldNames.size()];
+
+        for (int i = 0; i < fieldNames.size(); i++){
+            columnNames[i] = fieldNames.get(i).toString();
         }
 
         // Initialize table
@@ -62,11 +82,14 @@ class View implements Observer {
         table.setColumnSelectionAllowed(false);
         table.addMouseListener(stockMouseListener);
 
-        JPanel body = new JPanel();
         body.setLayout(new BorderLayout());
         body.add(table.getTableHeader(), BorderLayout.PAGE_START);
         body.add(table, BorderLayout.CENTER);
 
+        return body;
+    }
+
+    private JPanel renderFooter() {
         JPanel footer = new JPanel();
         footer.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -74,16 +97,8 @@ class View implements Observer {
         removeMonitorButton.setEnabled(false);
         footer.add(removeMonitorButton);
 
-        frame.add(header, BorderLayout.NORTH);
-        frame.add(body, BorderLayout.CENTER);
-        frame.add(footer, BorderLayout.SOUTH);
-        frame.addWindowListener(new CloseListener());
-        frame.addMouseListener(stockMouseListener);
-        frame.setSize(600,300);
-        frame.setLocation(100,100);
-        frame.setVisible(true);
-
-    } //View()
+        return footer;
+    }
 
     public String getTextField(){
         return this.myTextField.getText();
