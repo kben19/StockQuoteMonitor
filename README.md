@@ -1,24 +1,19 @@
-Stock Quote Monitor Program
+# Stock Quote Monitor Application
+Stock Quote Monitor applcation to monitor stock quote data by inserting stock 
+symbol to the program. The program obtains data from StockQuoteWS web service 
+and will show this information in an appropriate format to the user.
 
-Team Members:
+## Team Members
 1. Kelvin Benzali - 26445468
-2. Andre Christian - 
+2. Andre Christian - 26445379
 
-Descriptions:
-Stock Quote Monitor program for monitoring the status of stock quote data via the stock symbol.
-The program is able to get the data from web services and show the information such as the symbol, date and time of last trade to the user.
+## Functionality
+- Add a stock monitor
+- Maintain multiple stocks simultaneously
+- Remove the selected monitored stock
+- Update to stock data every 5 minutes
 
-Functionality:
-- able to retrieve stock data from the web service
-- able to show the data in GUI. The data includes symbol, date, time and last update
-- user is able to monitor multiple stocks simultaneously
-- user is able to remove the selected monitored stock
-- the program is updating the monitored stocks every 5 minutes
+More functionalities may be implemented in the future
 
-More functionalities might be implemented in the future
-
-How to run:
-
-
-Known Bugs:
-None
+## How to run:
+1. 
