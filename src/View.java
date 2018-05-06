@@ -23,7 +23,7 @@ class View implements Observer {
     private Frame frame;
     private StockMouseListener stockMouseListener;
 
-
+    // View constructor
     View(Model aModel) {
         System.out.println("View initialized");
         stockMouseListener = new StockMouseListener();
@@ -31,10 +31,12 @@ class View implements Observer {
         //local attributes
         frame = new Frame("Stock Quote Service");
 
+        //Initialized panel
         JPanel header = renderHeader();
         JPanel body = renderBody(aModel.getFieldNames());
         JPanel footer = renderFooter();
 
+        //Initialized main frame
         frame.add(header, BorderLayout.NORTH);
         frame.add(body, BorderLayout.CENTER);
         frame.add(footer, BorderLayout.SOUTH);
@@ -45,6 +47,7 @@ class View implements Observer {
         frame.setVisible(true);
     } //View()
 
+    //Initialized header panel
     private JPanel renderHeader() {
         JPanel header = new JPanel();
         header.setLayout(new FlowLayout());
@@ -60,6 +63,7 @@ class View implements Observer {
         return header;
     }
 
+    //Initialized body panel
     private JPanel renderBody(List fieldNames) {
         JPanel body = new JPanel();
 
@@ -82,13 +86,16 @@ class View implements Observer {
         table.setColumnSelectionAllowed(false);
         table.addMouseListener(stockMouseListener);
 
+        JScrollPane js = new JScrollPane(table);    // Enable the table to be scrollable
+
         body.setLayout(new BorderLayout());
         body.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        body.add(table, BorderLayout.CENTER);
+        body.add(js);
 
         return body;
-    }
+    }// renderBody()
 
+    //Initialized footer panel
     private JPanel renderFooter() {
         JPanel footer = new JPanel();
         footer.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -98,16 +105,19 @@ class View implements Observer {
         footer.add(removeMonitorButton);
 
         return footer;
-    }
+    }// renderFooter()
 
+    // Text field accessor
     public String getTextField(){
         return this.myTextField.getText();
     }
 
+    // Return the selected row
     public int getSelectedRow() {
         return this.table.getSelectedRow();
     }
 
+    // Update the enable property of remove button
     private void updateRemoveButton() {
         if (getSelectedRow() == -1) {
             removeMonitorButton.setEnabled(false);
@@ -116,6 +126,7 @@ class View implements Observer {
         }
     }// updateRemoveButton()
 
+    // Attach listener event into the buttons
     public void addController(ActionListener controller) {
         System.out.println("View      : adding controller");
 
@@ -126,8 +137,9 @@ class View implements Observer {
         removeMonitorButton.addActionListener(controller);
     } //addController()
 
+    // Function called every time observers receive updates from model
     @Override
-    public void update(ArrayList<ArrayList<Object>> anObject) {      //called every time observers receive notification from subject
+    public void update(ArrayList<ArrayList<Object>> anObject) {
         // Get latest stock quote data
         Object[][] data = new String[anObject.size()][4];
 
@@ -145,12 +157,14 @@ class View implements Observer {
         updateRemoveButton();
     }// update()
 
+    // Function called every time observers received message to show dialog from model
     @Override
     public void showDialog(String title, String message, int type){
         System.out.println("View      : Show message dialog");
         JOptionPane.showMessageDialog(frame, message, title, type);
     }// showDialog
 
+    // Close button listener
     public static class CloseListener extends WindowAdapter {
         public void windowClosing(WindowEvent e) {
             e.getWindow().setVisible(false);
@@ -158,6 +172,7 @@ class View implements Observer {
         } //windowClosing()
     } //CloseListener
 
+    // Mouse Listener
     public class StockMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
