@@ -8,7 +8,7 @@ and will show this information in an appropriate format to the user.
 - Student ID: 26445468
 - Student email: kben19@student.monash.edu
 
-### Andre Christian - 26445379
+### Andre Christian
 - Student ID: 26445379
 - Student email: achr18@student.monash.edu
 
