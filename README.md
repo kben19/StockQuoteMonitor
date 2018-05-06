@@ -4,8 +4,13 @@ symbol to the program. The program obtains data from StockQuoteWS web service
 and will show this information in an appropriate format to the user.
 
 ## Team Members
-1. Kelvin Benzali - 26445468
-2. Andre Christian - 26445379
+### Kelvin Benzali 
+- Student ID: 26445468
+- Student email: kben19@student.monash.edu
+
+### Andre Christian - 26445379
+- Student ID: 26445379
+- Student email: achr18@student.monash.edu
 
 ## Functionality
 - Add a stock monitor
@@ -15,5 +20,4 @@ and will show this information in an appropriate format to the user.
 
 More functionalities may be implemented in the future
 
-## How to run:
-1. 
+## How to run
