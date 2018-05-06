@@ -40,7 +40,7 @@ public class Model extends Subject {
     // Add stock quote data into the table
     public void addData(String symbol){
         List aList = SQPort.getQuote(symbol);
-        if (isAdded(symbol)){
+        if (isAdded(symbol.toUpperCase())){
             //will not add a monitor if it already exists
             System.out.println("Model     : Monitor cancelled");
             dialogMessage(0, "Error", "Symbol is already exist", 2);
