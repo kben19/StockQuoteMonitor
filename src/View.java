@@ -1,6 +1,6 @@
 /**
  * authors: Andre Christian & Kelvin Benzali
- * last modified: 3 May 2018
+ * last modified: 6 May 2018
  */
 
 import ObserverPackage.Observer;
@@ -116,6 +116,16 @@ class View implements Observer {
         }
     }// updateRemoveButton()
 
+    public void addController(ActionListener controller) {
+        System.out.println("View      : adding controller");
+
+        //add listener for adding monitor
+        addMonitorButton.addActionListener(controller);
+
+        //add listener for removing monitor
+        removeMonitorButton.addActionListener(controller);
+    } //addController()
+
     @Override
     public void update(ArrayList<ArrayList<Object>> anObject) {      //called every time observers receive notification from subject
         // Get latest stock quote data
@@ -136,20 +146,10 @@ class View implements Observer {
     }// update()
 
     @Override
-    public void message(String title, String message, int type){
+    public void showDialog(String title, String message, int type){
         System.out.println("View      : Show message dialog");
         JOptionPane.showMessageDialog(frame, message, title, type);
-    }// message()
-
-    public void addController(ActionListener controller) {
-        System.out.println("View      : adding controller");
-
-        //add listener for adding monitor
-        addMonitorButton.addActionListener(controller);
-
-        //add listener for removing monitor
-        removeMonitorButton.addActionListener(controller);
-    } //addController()
+    }// showDialog
 
     public static class CloseListener extends WindowAdapter {
         public void windowClosing(WindowEvent e) {

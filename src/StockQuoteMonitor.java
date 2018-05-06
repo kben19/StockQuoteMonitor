@@ -1,12 +1,13 @@
 /**
  * authors: Andre Christian & Kelvin Benzali
- * last modified: 3 May 2018
+ * last modified: 6 May 2018
  */
 
-public class SQService {
+public class StockQuoteMonitor {
 
-    public SQService() {
+    public StockQuoteMonitor() { } //SQService()
 
+    public void run() {
         //create Model and View
         Model myModel 	= new Model();
         View myView 	= new View(myModel);
@@ -21,7 +22,5 @@ public class SQService {
 
         //tell View about Controller
         myView.addController(myController);
-
-    } //SQService()
-
+    }
 } //SQService

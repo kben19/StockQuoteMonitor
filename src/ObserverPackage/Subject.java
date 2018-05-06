@@ -1,6 +1,6 @@
 /**
  * authors: Andre Christian & Kelvin Benzali
- * last modified: 3 May 2018
+ * last modified: 6 May 2018
  */
 
 package ObserverPackage;
@@ -27,6 +27,6 @@ public abstract class Subject {
     }// notifyObservers()
 
     public void dialogMessage(int obs, String title, String message, int type){
-        observers.get(obs).message(title, message, type);
+        observers.get(obs).showDialog(title, message, type);
     }// dialogMessage()
 }// Subject

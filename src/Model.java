@@ -1,6 +1,6 @@
 /**
  * authors: Andre Christian & Kelvin Benzali
- * last modified: 3 May 2018
+ * last modified: 6 May 2018
  */
 
 import stockquoteservice.*;
@@ -36,15 +36,18 @@ public class Model extends Subject {
 
     public void addData(String symbol){
         List aList = SQPort.getQuote(symbol);
-        if (checkData(symbol)){
+        if (isAdded(symbol)){
+            //will not add a monitor if it already exists
             System.out.println("Model     : Monitor cancelled");
             dialogMessage(0, "Error", "Symbol is already exist", 2);
         }
         else if(aList.get(1).equals("Unset")) {
+            //will not add a monitor if there is no such symbol
             System.out.println("Model     : Monitor cancelled");
             dialogMessage(0, "Error", "Symbol does not exist", 2);
         }
         else{
+            //add monitor
             System.out.println("Model     : Monitor Added");
             ArrayList<Object> myList = convertList(aList);
 
@@ -63,15 +66,6 @@ public class Model extends Subject {
         notifyObservers(SQData);
     }// removeData()
 
-    private boolean checkData(String symbol){
-        for (ArrayList<Object> dataSymbol : SQData){
-            if(symbol.equals(dataSymbol.get(0))){
-                return true;
-            }
-        }
-        return false;
-    }// checkData()
-
     public void updateData(){
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
@@ -81,7 +75,16 @@ public class Model extends Subject {
         }
 
         notifyObservers(SQData);
-    }// updateData
+    }// updateData()
+
+    private boolean isAdded(String symbol){
+        for (ArrayList<Object> dataSymbol : SQData){
+            if(symbol.equals(dataSymbol.get(0))){
+                return true;
+            }
+        }
+        return false;
+    }// checkData()
 
     private ArrayList<Object> convertList(List aList){
         ArrayList<Object> myList = new ArrayList<>();
@@ -89,7 +92,7 @@ public class Model extends Subject {
             myList.add(quote);
         }
         return myList;
-    }
+    }// convertList()
 
     public List getFieldNames(){
         return fieldNamesList;
