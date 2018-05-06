@@ -4,11 +4,11 @@ symbol to the program. The program obtains data from StockQuoteWS web service
 and will show this information in an appropriate format to the user.
 
 ## Team Members
-### Kelvin Benzali 
+#### Kelvin Benzali 
 - Student ID: 26445468
 - Student email: kben19@student.monash.edu
 
-### Andre Christian
+#### Andre Christian
 - Student ID: 26445379
 - Student email: achr18@student.monash.edu
 
