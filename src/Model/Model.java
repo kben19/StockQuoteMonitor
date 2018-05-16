@@ -1,9 +1,9 @@
-/**
+package Model; /**
  * authors: Andre Christian & Kelvin Benzali
  * last modified: 6 May 2018
  */
 
-import stockquoteservice.*;
+//import stockquoteservice.*;
 import ObserverPackage.Subject;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,16 +15,18 @@ public class Model extends Subject {
     // Class attributes
     private List fieldNamesList;
     private ArrayList<ArrayList<Object>> SQData = new ArrayList<>();
-    private StockQuoteWSPortType SQPort;
+    private ArrayList<StockQuote> myStockQuote = new ArrayList<>();
 
-    // Model Constructor
+    // Model.Model Constructor
     public Model(){
 
         // Initialized the web service for stock quote
         System.out.println("Model initialized");
-        StockQuoteWS SQservice = new StockQuoteWS();
-        SQPort = SQservice.getStockQuoteWSSOAP11PortHttp();
-        fieldNamesList = SQPort.getFieldNames().getReturn();    // Get field names for stock data
+
+        myStockQuote.add(new SQServiceAdapter());
+        myStockQuote.add(new SQTimeLapseAdapter());
+
+        fieldNamesList = myStockQuote.get(1).getFieldNames();
 
         Timer updateTimer = new Timer();
 
@@ -35,20 +37,28 @@ public class Model extends Subject {
             }
         }, 5 * 60 * 1000, 5 * 60 * 1000 );  //set a timer to run update every 5 minutes
 
-    } //Model()
+    } //Model.Model()
 
     // Add stock quote data into the table
-    public void addData(String symbol){
-        List aList = SQPort.getQuote(symbol);
-        if (isAdded(symbol.toUpperCase())){
+    public void addData(String symbol, int type){
+        List aList = myStockQuote.get(type).getQuote(symbol);
+        if (isAdded(aList.get(0).toString())){
             //will not add a monitor if it already exists
-            System.out.println("Model     : Monitor cancelled");
+            System.out.println("Model     : Monitor Added");
             dialogMessage(0, "Error", "Symbol is already exist", 2);
         }
-        else if(aList.get(1).equals("Unset")) {
+        else if(aList.get(0).equals("invalid symbol submitted") && type == 1){
+            //will not add a monitor if there is no such symbol in time lapse
+            System.out.println("Model     : Monitor Added");
+            dialogMessage(0, "Error", "Symbol does not exist\n" +
+                    "Stock quote time lapse symbol that are only available are:\n" +
+                    "RIO.AX, QAN.AX, ANZ.AX, CBA.AX, BHP.AX, NAB.AX", 2);
+        }
+        else if(aList.get(1).equals("Unset") && type == 0) {
             //will not add a monitor if there is no such symbol
-            System.out.println("Model     : Monitor cancelled");
-            dialogMessage(0, "Error", "Symbol does not exist", 2);
+            System.out.println("Model     : Monitor Added");
+            dialogMessage(0, "Error", "Symbol does not exist\n" +
+                    "For available symbols, please visit\nhttp://www.asx.com.au/asx/research/listedCompanies.do", 2);
         }
         else{
             //add monitor
@@ -65,7 +75,7 @@ public class Model extends Subject {
 
     // Remove a certain stock quote data from table
     public void removeData(int index) {
-        System.out.println("Model       : Monitor removed");
+        System.out.println("Model     : Monitor removed");
         SQData.remove(index);
 
         notifyObservers(SQData);
@@ -75,7 +85,7 @@ public class Model extends Subject {
     public void updateData(){
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
-            List aList = SQPort.getQuote(SQData.get(i).get(0).toString());
+            List aList = myStockQuote.get(0).getQuote(SQData.get(i).get(0).toString());
             ArrayList<Object> temp = convertList(aList);
             SQData.set(i, temp);
         }
@@ -106,4 +116,4 @@ public class Model extends Subject {
     public List getFieldNames(){
         return fieldNamesList;
     }
-} //Model
+} //Model.Model

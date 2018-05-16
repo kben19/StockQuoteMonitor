@@ -1,3 +1,5 @@
+import Model.Model;
+
 /**
  * authors: Andre Christian & Kelvin Benzali
  * last modified: 6 May 2018
@@ -20,12 +22,15 @@ class Controller implements java.awt.event.ActionListener{
         else if (e.getActionCommand().equals("Remove")){
             removeMonitor();
         }
+        else if (e.getActionCommand().equals("Add Time Lapse")){
+            addTimeLapse();
+        }
     }//actionPerformed
 
-    // Model mutator
+    // Model.Model mutator
     public void addModel(Model m){
         this.model = m;
-        System.out.println("Controller: connected to Model");
+        System.out.println("Controller: connected to Model.Model");
     }//addModel
 
     // View mutator
@@ -37,7 +42,7 @@ class Controller implements java.awt.event.ActionListener{
     // Add stock quote data
     private void addMonitor() {
         System.out.println("Controller: Adding a monitor");
-        model.addData(view.getTextField());
+        model.addData(view.getTextField(), 0);
     }//addMonitor
 
     // Remove stock quote data
@@ -45,6 +50,11 @@ class Controller implements java.awt.event.ActionListener{
         System.out.println("Controller: Removing a monitor");
         model.removeData(view.getSelectedRow());
     }//removeMonitor
+
+    private void addTimeLapse(){
+        System.out.println("Controller: Adding a time lapse monitor");
+        model.addData(view.getTextField(), 1);
+    }
 
 
 } //Controller
