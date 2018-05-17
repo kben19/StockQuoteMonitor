@@ -3,7 +3,6 @@ package Model; /**
  * last modified: 6 May 2018
  */
 
-//import stockquoteservice.*;
 import ObserverPackage.Subject;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ public class Model extends Subject {
     // Class attributes
     private List fieldNamesList;
     private ArrayList<ArrayList<Object>> SQData = new ArrayList<>();
+    private ArrayList<ArrayList<String[]>> SQHistory = new ArrayList<>();
     private ArrayList<StockQuote> myStockQuote = new ArrayList<>();
 
     // Model.Model Constructor
@@ -64,8 +64,11 @@ public class Model extends Subject {
             //add monitor
             System.out.println("Model     : Monitor Added");
             ArrayList<Object> myList = convertList(aList);
+            ArrayList<String[]> myHistory = new ArrayList<>();
+            myHistory.add(new String[]{myList.get(1).toString(), myList.get(3).toString()});
 
             SQData.add(myList);
+            SQHistory.add(myHistory);
 
             notifyObservers(SQData);
         }
@@ -77,21 +80,40 @@ public class Model extends Subject {
     public void removeData(int index) {
         System.out.println("Model     : Monitor removed");
         SQData.remove(index);
+        SQHistory.remove(index);
 
         notifyObservers(SQData);
+        notifyCharts(SQHistory);
     }// removeData()
 
     // Update the entire stock quote data table
     public void updateData(){
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
-            List aList = myStockQuote.get(0).getQuote(SQData.get(i).get(0).toString());
+            String symbolString = SQData.get(i).get(0).toString();
+            int type = (symbolString.contains(".")) ? 1 : 0;
+            List aList = myStockQuote.get(type).getQuote(symbolString);
             ArrayList<Object> temp = convertList(aList);
+            SQHistory.get(i).add(new String[]{temp.get(1).toString(), temp.get(3).toString()});
             SQData.set(i, temp);
         }
 
         notifyObservers(SQData);
+        notifyCharts(SQHistory);
     }// updateData()
+
+    public ArrayList<ArrayList<String[]>> getDataHistory() {
+        return SQHistory;
+    }
+
+    private int getIndex(String symbol){
+        for (int i = 0; i < SQData.size(); i++){
+            if (SQData.get(i).get(0).equals(symbol)){
+                return i;
+            }
+        }
+        return -1;
+    }
 
     // Check if the a certain symbol is added in the table
     private boolean isAdded(String symbol){

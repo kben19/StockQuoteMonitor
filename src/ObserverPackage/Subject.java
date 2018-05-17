@@ -26,6 +26,12 @@ public abstract class Subject {
         }
     }// notifyObservers()
 
+    public void notifyCharts(ArrayList<ArrayList<String[]>> aDataset) {
+        for ( Observer o : observers ) {
+            o.updateChart(aDataset);
+        }
+    }
+
     public void dialogMessage(int obs, String title, String message, int type){
         observers.get(obs).showDialog(title, message, type);
     }// dialogMessage()

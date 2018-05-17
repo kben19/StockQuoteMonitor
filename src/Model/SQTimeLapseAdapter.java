@@ -13,7 +13,6 @@ public class SQTimeLapseAdapter implements StockQuote {
     SQTimeLapseAdapter(){
         StockQuoteTimeLapseService mySQTimeLapse = new StockQuoteTimeLapseService();
         mySQPort = mySQTimeLapse.getStockQuoteTimeLapseServiceHttpSoap11Endpoint();
-        System.out.println(mySQPort.getSymbols().getReturn());
     }
 
     @Override
