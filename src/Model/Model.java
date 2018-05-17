@@ -18,7 +18,7 @@ public class Model extends Subject {
     private ArrayList<StockQuote> myStockQuote = new ArrayList<>();
 
     // Model.Model Constructor
-    public Model(){
+    public Model() {
 
         // Initialized the web service for stock quote
         System.out.println("Model initialized");
@@ -35,13 +35,15 @@ public class Model extends Subject {
             public void run() {
                 updateData();   // Update data regularly
             }
-        }, 5 * 60 * 1000, 5 * 60 * 1000 );  //set a timer to run update every 5 minutes
+        //}, 5 * 60 * 1000, 5 * 60 * 1000);  //set a timer to run update every 5 minutes
+        }, 7000, 7000); //set a timer to run update every 5 seconds (DEBUGGING PURPOSES)
 
     } //Model.Model()
 
     // Add stock quote data into the table
     public void addData(String symbol, int type){
         List aList = myStockQuote.get(type).getQuote(symbol);
+
         if (isAdded(aList.get(0).toString())){
             //will not add a monitor if it already exists
             System.out.println("Model     : Monitor Added");
@@ -63,11 +65,18 @@ public class Model extends Subject {
         else{
             //add monitor
             System.out.println("Model     : Monitor Added");
+            if (type == 1) { convertDollars(aList); }
             ArrayList<Object> myList = convertList(aList);
             ArrayList<String[]> myHistory = new ArrayList<>();
             myHistory.add(new String[]{myList.get(1).toString(), myList.get(3).toString()});
 
             SQData.add(myList);
+
+            //In case of update failed, generate the default data
+            if (myList.get(3).toString().contains("Update failed")) {
+                myHistory.remove(0);
+                myHistory.add(new String[]{"0", "0:00"});
+            }
             SQHistory.add(myHistory);
 
             notifyObservers(SQData);
@@ -93,9 +102,19 @@ public class Model extends Subject {
             String symbolString = SQData.get(i).get(0).toString();
             int type = (symbolString.contains(".")) ? 1 : 0;
             List aList = myStockQuote.get(type).getQuote(symbolString);
+
+            if (type == 1) { convertDollars(aList); }
             ArrayList<Object> temp = convertList(aList);
-            SQHistory.get(i).add(new String[]{temp.get(1).toString(), temp.get(3).toString()});
             SQData.set(i, temp);
+
+            //In case of successful update
+            if (!temp.get(3).toString().contains("Update failed")) {
+                //In case of previous failed update, remove the default data
+                if (SQHistory.get(i).get(0) == new String[]{"0", "0:00"}){
+                    SQHistory.get(i).remove(0);
+                }
+                SQHistory.get(i).add(new String[]{temp.get(1).toString(), temp.get(3).toString()});
+            }
         }
 
         notifyObservers(SQData);
@@ -106,13 +125,11 @@ public class Model extends Subject {
         return SQHistory;
     }
 
-    private int getIndex(String symbol){
-        for (int i = 0; i < SQData.size(); i++){
-            if (SQData.get(i).get(0).equals(symbol)){
-                return i;
-            }
+    //Convert all time lapse service stock value into dollars
+    private void convertDollars(List aList) {
+        for (int i : new int[]{1, 4, 5, 6, 7}) {
+            aList.set(i, Double.parseDouble(aList.get(i).toString()) / 100);
         }
-        return -1;
     }
 
     // Check if the a certain symbol is added in the table

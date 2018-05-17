@@ -55,6 +55,9 @@ class Controller implements java.awt.event.ActionListener{
         if (view.getSelectedRow() == view.getSelectedDataIndex()) {
             view.setSelectedDataIndex(-1);
         }
+        else if (view.getSelectedRow() < view.getSelectedDataIndex()){
+            view.setSelectedDataIndex(view.getSelectedDataIndex()-1);
+        }
         model.removeData(view.getSelectedRow());
     }//removeMonitor
 
