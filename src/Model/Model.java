@@ -65,7 +65,7 @@ public class Model extends Subject {
         else{
             //add monitor
             System.out.println("Model     : Monitor Added");
-            if (type == 1) { convertDollars(aList); }
+
             ArrayList<Object> myList = convertList(aList);
             ArrayList<String[]> myHistory = new ArrayList<>();
             myHistory.add(new String[]{myList.get(1).toString(), myList.get(3).toString()});
@@ -103,7 +103,6 @@ public class Model extends Subject {
             int type = (symbolString.contains(".")) ? 1 : 0;
             List aList = myStockQuote.get(type).getQuote(symbolString);
 
-            if (type == 1) { convertDollars(aList); }
             ArrayList<Object> temp = convertList(aList);
             SQData.set(i, temp);
 
@@ -123,14 +122,7 @@ public class Model extends Subject {
 
     public ArrayList<ArrayList<String[]>> getDataHistory() {
         return SQHistory;
-    }
-
-    //Convert all time lapse service stock value into dollars
-    private void convertDollars(List aList) {
-        for (int i : new int[]{1, 4, 5, 6, 7}) {
-            aList.set(i, Double.parseDouble(aList.get(i).toString()) / 100);
-        }
-    }
+    }// getDataHistory()
 
     // Check if the a certain symbol is added in the table
     private boolean isAdded(String symbol){

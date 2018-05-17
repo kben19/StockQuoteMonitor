@@ -24,6 +24,7 @@ public class SQServiceAdapter implements StockQuote {
     @Override
     public List getQuote(String symbol){
         List tempList = mySQPort.getQuote(symbol);
+        //Add the gap column with None
         for (int i = 0; i < 5; i++){
             tempList.add("None");
         }

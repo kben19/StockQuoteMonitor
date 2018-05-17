@@ -22,7 +22,12 @@ public class SQTimeLapseAdapter implements StockQuote {
 
     @Override
     public List getQuote(String symbol){
-        return  mySQPort.getStockQuote(symbol);
+        List aList = mySQPort.getStockQuote(symbol);
+        //Convert into dollars
+        for (int i : new int[]{1, 4, 5, 6, 7}) {
+            aList.set(i, Double.parseDouble(aList.get(i).toString()) / 100);
+        }
+        return  aList;
 
     }
 }
