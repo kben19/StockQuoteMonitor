@@ -1,4 +1,6 @@
-package Model; /**
+package Model;
+
+/**
  * authors: Andre Christian & Kelvin Benzali
  * last modified: 6 May 2018
  */
