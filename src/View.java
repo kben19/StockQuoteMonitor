@@ -12,6 +12,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 import java.util.List;
 import java.util.ArrayList;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 
 class View implements Observer {
@@ -19,10 +25,13 @@ class View implements Observer {
     //class attributes
     private TextField myTextField;
     private Button addMonitorButton, addTimeLapseButton;
-    private Button removeMonitorButton;
+    private Button removeMonitorButton, viewMonitorButton;
     private JTable table;
     private Frame frame;
     private StockMouseListener stockMouseListener;
+    private JFreeChart myChart;
+    private CategoryPlot myPlot;
+    private int selectedDataIndex = -1;
 
     // View constructor
     View(Model aModel) {
@@ -43,7 +52,7 @@ class View implements Observer {
         frame.add(footer, BorderLayout.SOUTH);
         frame.addWindowListener(new CloseListener());
         frame.addMouseListener(stockMouseListener);
-        frame.setSize(600,300);
+        frame.setSize(900,900);
         frame.setLocation(100,100);
         frame.setVisible(true);
     } //View()
@@ -64,7 +73,7 @@ class View implements Observer {
         header.add(addTimeLapseButton);
 
         return header;
-    }
+    }// renderHeader()
 
     //Initialized body panel
     private JPanel renderBody(List fieldNames) {
@@ -98,34 +107,72 @@ class View implements Observer {
         return body;
     }// renderBody()
 
-    //Initialized footer panel
+    //Initialized footer panel (buttons and line graph)
     private JPanel renderFooter() {
         JPanel footer = new JPanel();
-        footer.setLayout(new FlowLayout(FlowLayout.LEFT));
+        footer.setLayout(new BorderLayout());
 
         removeMonitorButton = new Button("Remove");
         removeMonitorButton.setEnabled(false);
-        footer.add(removeMonitorButton);
+        viewMonitorButton = new Button("View");
+        viewMonitorButton.setEnabled(false);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.add(removeMonitorButton);
+        buttonPanel.add(viewMonitorButton);
+        JPanel chart = renderChart();
+
+        footer.add(buttonPanel, BorderLayout.NORTH);
+        footer.add(chart, BorderLayout.CENTER);
 
         return footer;
     }// renderFooter()
+
+    //Initialized the line graph chart
+    private JPanel renderChart() {
+        JPanel chart = new JPanel();
+        chart.setLayout(new BorderLayout());
+        myChart = ChartFactory.createLineChart(
+                "", "Time", "Value",
+                new DefaultCategoryDataset()
+        );
+        myPlot = myChart.getCategoryPlot();
+        myPlot.setBackgroundPaint(Color.WHITE);
+
+        // Refresh the axis range
+        NumberAxis numPlot = (NumberAxis) myPlot.getRangeAxis();
+        numPlot.setAutoRangeIncludesZero(false);
+        numPlot.setAutoRange(true);
+
+        ChartPanel CP = new ChartPanel(myChart);
+        CP.setPreferredSize(new java.awt.Dimension(900, 400));
+        chart.add(CP);
+        return chart;
+    }// renderChart()
 
     // Text field accessor
     public String getTextField(){
         return this.myTextField.getText();
     }
 
-    // Return the selected row
+    // Return the selected row index
     public int getSelectedRow() {
         return this.table.getSelectedRow();
     }
 
+    // selectedDataIndex accessor
+    public int getSelectedDataIndex() { return selectedDataIndex; }
+
+    // selectedDataIndex mutator
+    public void setSelectedDataIndex(int index){ selectedDataIndex = index; }
+
     // Update the enable property of remove button
-    private void updateRemoveButton() {
+    private void updateButtonVisibility(Button aButton) {
         if (getSelectedRow() == -1) {
-            removeMonitorButton.setEnabled(false);
+            aButton.setEnabled(false);
         } else {
-            removeMonitorButton.setEnabled(true);
+            aButton.setEnabled(true);
         }
     }// updateRemoveButton()
 
@@ -139,13 +186,33 @@ class View implements Observer {
 
         //add listener for removing monitor
         removeMonitorButton.addActionListener(controller);
+        //add listener for viewing monitor
+        viewMonitorButton.addActionListener(controller);
     } //addController()
+
+    // Function called every time observers receive update to the selected chart
+    public void updateChart(ArrayList<ArrayList<String[]>> anArray) {
+        DefaultCategoryDataset aDataset = new DefaultCategoryDataset();
+        if (selectedDataIndex != -1 && anArray.size() > 0) {
+            ArrayList<String[]> selectedData = anArray.get(getSelectedDataIndex());     //get the selected dataset row
+            for (String[] item : selectedData) {
+                aDataset.addValue(Double.parseDouble(item[0]), "Stock Value", item[1]); //update data set
+            }
+            myChart.setTitle(table.getModel().getValueAt(selectedDataIndex, 0).toString()); //update plot title
+        }
+        else{
+            myChart.setTitle("");
+        }
+
+        myPlot.setDataset(aDataset);
+
+    }// updateChart()
 
     // Function called every time observers receive updates from model
     @Override
     public void update(ArrayList<ArrayList<Object>> anObject) {
         // Get latest stock quote data
-        Object[][] data = null;
+        String[][] data = null;
         if (anObject.size() > 0) {  // Prevent the out of index error bug when data is empty
             data = new String[anObject.size()][anObject.get(0).size()];
         }
@@ -157,11 +224,15 @@ class View implements Observer {
         // Insert all row data
         for (int i = 0; i < anObject.size(); i++){
             for(int j = 0; j < anObject.get(i).size(); j++){
-                data[i][j] = anObject.get(i).get(j);
+                data[i][j] = anObject.get(i).get(j).toString();
             }
             model.addRow(data[i]);
         }
-        updateRemoveButton();
+
+        //update the button visibility
+        updateButtonVisibility(removeMonitorButton);
+        updateButtonVisibility(viewMonitorButton);
+
     }// update()
 
     // Function called every time observers received message to show dialog from model
@@ -183,7 +254,8 @@ class View implements Observer {
     public class StockMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            updateRemoveButton();
+            updateButtonVisibility(removeMonitorButton);
+            updateButtonVisibility(viewMonitorButton);
         }
     }//StockMouseListener
 } //View

@@ -1,5 +1,6 @@
 import Model.Model;
 
+
 /**
  * authors: Andre Christian & Kelvin Benzali
  * last modified: 6 May 2018
@@ -25,6 +26,9 @@ class Controller implements java.awt.event.ActionListener{
         else if (e.getActionCommand().equals("Add Time Lapse")){
             addTimeLapse();
         }
+        else if (e.getActionCommand().equals("View")){
+            viewChart();
+        }
     }//actionPerformed
 
     // Model.Model mutator
@@ -48,12 +52,24 @@ class Controller implements java.awt.event.ActionListener{
     // Remove stock quote data
     private void removeMonitor() {
         System.out.println("Controller: Removing a monitor");
+        if (view.getSelectedRow() == view.getSelectedDataIndex()) {
+            view.setSelectedDataIndex(-1);
+        }
+        else if (view.getSelectedRow() < view.getSelectedDataIndex()){
+            view.setSelectedDataIndex(view.getSelectedDataIndex()-1);
+        }
         model.removeData(view.getSelectedRow());
     }//removeMonitor
 
     private void addTimeLapse(){
         System.out.println("Controller: Adding a time lapse monitor");
         model.addData(view.getTextField(), 1);
+    }
+
+    private void viewChart(){
+        System.out.println("Controller: View the selected monitor chart");
+        view.setSelectedDataIndex(view.getSelectedRow());
+        model.notifyCharts(model.getDataHistory());
     }
 
 
