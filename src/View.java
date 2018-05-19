@@ -32,6 +32,7 @@ class View implements Observer {
     private JFreeChart myChart;
     private CategoryPlot myPlot;
     private int selectedDataIndex;
+    private String[][] data;
 
     // View constructor
     View(Model aModel) {
@@ -77,13 +78,13 @@ class View implements Observer {
     }// renderHeader()
 
     //Initialized body panel
-    private JPanel renderBody(List fieldNames) {
+    private JPanel renderBody(List<String> fieldNames) {
         JPanel body = new JPanel();
 
         String[] columnNames = new String[fieldNames.size()];
 
         for (int i = 0; i < fieldNames.size(); i++){
-            columnNames[i] = fieldNames.get(i).toString();
+            columnNames[i] = fieldNames.get(i);
         }
 
         // Initialize table
@@ -212,22 +213,30 @@ class View implements Observer {
     // Function called every time observers receive updates from model
     @Override
     public void update(ArrayList<ArrayList<String>> anObject) {
-        // Get latest stock quote data
-        String[][] data = null;
-        if (anObject.size() > 0) {  // Prevent the out of index error bug when data is empty
-            data = new String[anObject.size()][anObject.get(0).size()];
-        }
-
         // Clear table row data
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
+        // Get latest stock quote data
+        String[][] prevData = data;
+        if (anObject.size() > 0) {  // Prevent the out of index error bug when data is empty
+            data = new String[anObject.size()][anObject.get(0).size()];
+        }
+
         // Insert all row data
         for (int i = 0; i < anObject.size(); i++){
             for(int j = 0; j < anObject.get(i).size(); j++){
-                data[i][j] = anObject.get(i).get(j).toString();
+                data[i][j] = anObject.get(i).get(j);
             }
             model.addRow(data[i]);
+        }
+
+        if(data.length == prevData.length) {
+            for (int i = 0; i < data.length; i++) {
+                if(Double.parseDouble(data[i][1]) > Double.parseDouble(prevData[i][1])) {
+                    //change color
+                }
+            }
         }
 
         //update the button visibility
