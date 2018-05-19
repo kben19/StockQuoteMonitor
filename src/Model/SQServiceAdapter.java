@@ -25,7 +25,7 @@ public class SQServiceAdapter {
         return mySQTimeLapsePort.getFieldNames().getReturn();
     }
 
-    public List getQuote(String symbol, SQType type){
+    public List<String> getQuote(String symbol, SQType type){
         List<String> quoteData;
         if(type == SQType.STOCK_QUOTE_WS) {
             quoteData = mySQWSPort.getQuote(symbol);
@@ -36,6 +36,10 @@ public class SQServiceAdapter {
             }
         } else {
             quoteData = mySQTimeLapsePort.getStockQuote(symbol);
+            for (int i : new int[]{1, 4, 5, 6, 7}) {
+                Double newVal = Double.parseDouble(quoteData.get(i)) / 100;
+                quoteData.set(i, newVal.toString());
+            }
         }
 
         return quoteData;

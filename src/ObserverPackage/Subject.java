@@ -20,7 +20,7 @@ public abstract class Subject {
         this.observers.remove(o);
     }
 
-    public void notifyObservers(ArrayList<ArrayList<Object>> anObject) {
+    public void notifyObservers(ArrayList<ArrayList<String>> anObject) {
         for( Observer o : observers ) {
             o.update(anObject);
         }

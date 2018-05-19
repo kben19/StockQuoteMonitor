@@ -6,7 +6,6 @@ package Model;
  */
 
 import ObserverPackage.Subject;
-import stockquoteservice.StockQuoteWSPortType;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,18 +16,21 @@ import java.util.TimerTask;
 public class Model extends Subject {
     // constants
     private final int SQHISTORY_LIMIT = 10;
+    private final int WS_UPDATE_DURATION = 300;
 
     // Class attributes
-    private List fieldNamesList;
-    private ArrayList<ArrayList<Object>> SQData;
+    private List<String> fieldNamesList;
+    private ArrayList<ArrayList<String>> SQData;
     private ArrayList<ArrayList<String[]>> SQHistory;
     private SQServiceAdapter myStockQuote;
+    private int WSUpdateCounter;
 
     // Model.Model Constructor
     public Model() {
         SQData = new ArrayList<>();
         SQHistory = new ArrayList<>();
         myStockQuote = new SQServiceAdapter();
+        WSUpdateCounter = 0;
 
         // Initialized the web service for stock quote
         System.out.println("Model initialized");
@@ -40,18 +42,18 @@ public class Model extends Subject {
         updateTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                WSUpdateCounter += 5;
                 updateData();   // Update data regularly
             }
-        //}, 5 * 60 * 1000, 5 * 60 * 1000);  //set a timer to run update every 5 minutes
-        }, 7000, 7000); //set a timer to run update every 5 seconds (DEBUGGING PURPOSES)
+        }, 5000, 5000); //set a timer to run upda te every 5 seconds
 
     } //Model.Model()
 
     // Add stock quote data into the table
     public void addData(String symbol, SQType type){
-        List aList = myStockQuote.getQuote(symbol, type);
+        List<String> aList = myStockQuote.getQuote(symbol, type);
 
-        if (isAdded(aList.get(0).toString())){
+        if (isAdded(aList.get(0))){
             //will not add a monitor if it already exists
             dialogMessage(0, "Error", "Symbol already exists", 2);
         }
@@ -70,14 +72,14 @@ public class Model extends Subject {
             //add monitor
             System.out.println("Model     : Monitor Added");
 
-            ArrayList<Object> myList = convertList(aList);
+            ArrayList<String> myList = convertList(aList);
             ArrayList<String[]> myHistory = new ArrayList<>();
-            myHistory.add(new String[]{myList.get(1).toString(), myList.get(3).toString()});
+            myHistory.add(new String[]{myList.get(1), myList.get(3)});
 
             SQData.add(myList);
 
             //In case of update failed, generate the default data
-            if (myList.get(3).toString().contains("Update failed")) {
+            if (myList.get(3).contains("Update failed")) {
                 myHistory.remove(0);
                 myHistory.add(new String[]{"0", "0:00"});
             }
@@ -104,26 +106,33 @@ public class Model extends Subject {
     public void updateData(){
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
-            String symbolString = SQData.get(i).get(0).toString();
+            String symbolString = SQData.get(i).get(0);
             SQType type = (symbolString.contains(".")) ? SQType.STOCK_QUOTE_TIMELAPSE_WS : SQType.STOCK_QUOTE_WS;
-            List aList = myStockQuote.getQuote(symbolString, type);
+            if (type == SQType.STOCK_QUOTE_TIMELAPSE_WS || WSUpdateCounter == WS_UPDATE_DURATION) {
+                List<String> aList = myStockQuote.getQuote(symbolString, type);
 
-            ArrayList<Object> temp = convertList(aList);
-            SQData.set(i, temp);
+                ArrayList<String> temp = convertList(aList);
+                SQData.set(i, temp);
 
-            //In case of successful update
-            if (!temp.get(3).toString().contains("Update failed")) {
-                //In case of previous failed update, remove the default data
-                if (SQHistory.get(i).get(0) == new String[]{"0", "0:00"}){
-                    SQHistory.get(i).remove(0);
-                }
-                SQHistory.get(i).add(new String[]{temp.get(1).toString(), temp.get(3).toString()});
+                //In case of successful update
+                if (!temp.get(3).contains("Update failed")) {
+                    //In case of previous failed update, remove the default data
+                    if (SQHistory.get(i).get(0) == new String[]{"0", "0:00"}) {
+                        SQHistory.get(i).remove(0);
+                    }
+                    SQHistory.get(i).add(new String[]{temp.get(1), temp.get(3)});
 
-                // maintain only 10 entries of history
-                if(SQHistory.get(i).size() > this.SQHISTORY_LIMIT) {
-                    SQHistory.get(i).remove(0);
+                    // maintain only 10 entries of history
+                    if (SQHistory.get(i).size() > this.SQHISTORY_LIMIT) {
+                        SQHistory.get(i).remove(0);
+                    }
                 }
             }
+        }
+
+        // reset timer that updates StockQuoteWS
+        if(WSUpdateCounter == WS_UPDATE_DURATION) {
+            WSUpdateCounter = 0;
         }
 
         notifyObservers(SQData);
@@ -136,7 +145,7 @@ public class Model extends Subject {
 
     // Check if the a certain symbol is added in the table
     private boolean isAdded(String symbol){
-        for (ArrayList<Object> dataSymbol : SQData){
+        for (ArrayList<String> dataSymbol : SQData){
             if(symbol.equals(dataSymbol.get(0))){
                 return true;
             }
@@ -145,16 +154,16 @@ public class Model extends Subject {
     }// checkData()
 
     // Convert list type into array list type
-    private ArrayList<Object> convertList(List aList){
-        ArrayList<Object> myList = new ArrayList<>();
-        for (Object quote : aList){
+    private ArrayList<String> convertList(List<String> aList){
+        ArrayList<String> myList = new ArrayList<>();
+        for (String quote : aList){
             myList.add(quote);
         }
         return myList;
     }// convertList()
 
     // Field names accessor
-    public List getFieldNames(){
+    public List<String> getFieldNames(){
         return fieldNamesList;
     }
 } //Model.Model

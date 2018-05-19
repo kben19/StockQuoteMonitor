@@ -8,7 +8,7 @@ package ObserverPackage;
 import java.util.ArrayList;
 
 public interface Observer {
-    void update(ArrayList<ArrayList<Object>> anObject);
+    void update(ArrayList<ArrayList<String>> anObject);
 
     void updateChart(ArrayList<ArrayList<String[]>> aDataset);
 

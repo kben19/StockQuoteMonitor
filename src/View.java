@@ -211,7 +211,7 @@ class View implements Observer {
 
     // Function called every time observers receive updates from model
     @Override
-    public void update(ArrayList<ArrayList<Object>> anObject) {
+    public void update(ArrayList<ArrayList<String>> anObject) {
         // Get latest stock quote data
         String[][] data = null;
         if (anObject.size() > 0) {  // Prevent the out of index error bug when data is empty
