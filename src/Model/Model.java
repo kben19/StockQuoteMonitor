@@ -1,6 +1,6 @@
 package Model;
 
-/**
+/*
  * authors: Andre Christian & Kelvin Benzali
  * last modified: 6 May 2018
  */
@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class Model extends Subject {
+    // constants
+    private final int SQHISTORY_LIMIT = 10;
 
     // Class attributes
     private List fieldNamesList;
@@ -48,19 +51,16 @@ public class Model extends Subject {
 
         if (isAdded(aList.get(0).toString())){
             //will not add a monitor if it already exists
-            System.out.println("Model     : Monitor Added");
-            dialogMessage(0, "Error", "Symbol is already exist", 2);
+            dialogMessage(0, "Error", "Symbol already exists", 2);
         }
         else if(aList.get(0).equals("invalid symbol submitted") && type == 1){
             //will not add a monitor if there is no such symbol in time lapse
-            System.out.println("Model     : Monitor Added");
             dialogMessage(0, "Error", "Symbol does not exist\n" +
-                    "Stock quote time lapse symbol that are only available are:\n" +
+                    "Available stock quote time lapse symbols are:\n" +
                     "RIO.AX, QAN.AX, ANZ.AX, CBA.AX, BHP.AX, NAB.AX", 2);
         }
         else if(aList.get(1).equals("Unset") && type == 0) {
             //will not add a monitor if there is no such symbol
-            System.out.println("Model     : Monitor Added");
             dialogMessage(0, "Error", "Symbol does not exist\n" +
                     "For available symbols, please visit\nhttp://www.asx.com.au/asx/research/listedCompanies.do", 2);
         }
@@ -79,6 +79,7 @@ public class Model extends Subject {
                 myHistory.remove(0);
                 myHistory.add(new String[]{"0", "0:00"});
             }
+
             SQHistory.add(myHistory);
 
             notifyObservers(SQData);
@@ -115,6 +116,11 @@ public class Model extends Subject {
                     SQHistory.get(i).remove(0);
                 }
                 SQHistory.get(i).add(new String[]{temp.get(1).toString(), temp.get(3).toString()});
+
+                // maintain only 10 entries of history
+                if(SQHistory.get(i).size() > this.SQHISTORY_LIMIT) {
+                    SQHistory.get(i).remove(0);
+                }
             }
         }
 
