@@ -31,12 +31,13 @@ class View implements Observer {
     private StockMouseListener stockMouseListener;
     private JFreeChart myChart;
     private CategoryPlot myPlot;
-    private int selectedDataIndex = -1;
+    private int selectedDataIndex;
 
     // View constructor
     View(Model aModel) {
         System.out.println("View initialized");
         stockMouseListener = new StockMouseListener();
+        selectedDataIndex = -1;
 
         //local attributes
         frame = new Frame("Stock Quote Service");

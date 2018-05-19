@@ -9,8 +9,8 @@ import Model.SQType;
 
 class Controller implements java.awt.event.ActionListener{
     // Class variables
-    Model model;
-    View view;
+    private Model model;
+    private View view;
 
     Controller() {
         System.out.println ("Controller initialized");
@@ -25,7 +25,7 @@ class Controller implements java.awt.event.ActionListener{
             removeMonitor();
         }
         else if (e.getActionCommand().equals("Add Time Lapse")){
-            addTimeLapse();
+            addTimeLapseMonitor();
         }
         else if (e.getActionCommand().equals("View")){
             viewChart();
@@ -62,7 +62,7 @@ class Controller implements java.awt.event.ActionListener{
         model.removeData(view.getSelectedRow());
     }//removeMonitor
 
-    private void addTimeLapse(){
+    private void addTimeLapseMonitor(){
         System.out.println("Controller: Adding a time lapse monitor");
         model.addData(view.getTextField(), SQType.STOCK_QUOTE_TIMELAPSE_WS);
     }
@@ -72,6 +72,4 @@ class Controller implements java.awt.event.ActionListener{
         view.setSelectedDataIndex(view.getSelectedRow());
         model.notifyCharts(model.getDataHistory());
     }
-
-
 } //Controller
