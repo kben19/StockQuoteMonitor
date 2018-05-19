@@ -5,29 +5,39 @@ package Model;
  */
 
 import stockquoteservice.*;
+import stockquotetimelapse.StockQuoteTimeLapseService;
+import stockquotetimelapse.StockQuoteTimeLapseServicePortType;
 import java.util.List;
 
-public class SQServiceAdapter implements StockQuote {
+public class SQServiceAdapter {
 
-    private StockQuoteWSPortType mySQPort;
+    private StockQuoteWSPortType mySQWSPort;
+    private StockQuoteTimeLapseServicePortType mySQTimeLapsePort;
 
     public SQServiceAdapter(){
         StockQuoteWS mySQService = new StockQuoteWS();
-        mySQPort = mySQService.getStockQuoteWSSOAP11PortHttp();
+        StockQuoteTimeLapseService mySQTimeLapse = new StockQuoteTimeLapseService();
+        mySQWSPort = mySQService.getStockQuoteWSSOAP11PortHttp();
+        mySQTimeLapsePort = mySQTimeLapse.getStockQuoteTimeLapseServiceHttpSoap11Endpoint();
     }
 
-    @Override
     public List getFieldNames(){
-        return mySQPort.getFieldNames().getReturn();
+        return mySQTimeLapsePort.getFieldNames().getReturn();
     }
 
-    @Override
-    public List getQuote(String symbol){
-        List tempList = mySQPort.getQuote(symbol);
-        //Add the gap column with None
-        for (int i = 0; i < 5; i++){
-            tempList.add("None");
+    public List getQuote(String symbol, SQType type){
+        List<String> quoteData;
+        if(type == SQType.STOCK_QUOTE_WS) {
+            quoteData = mySQWSPort.getQuote(symbol);
+
+            //Add the gap column with None
+            for (int i = 0; i < 5; i++){
+                quoteData.add("None");
+            }
+        } else {
+            quoteData = mySQTimeLapsePort.getStockQuote(symbol);
         }
-        return tempList;
+
+        return quoteData;
     }
 }

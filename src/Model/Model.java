@@ -6,6 +6,8 @@ package Model;
  */
 
 import ObserverPackage.Subject;
+import stockquoteservice.StockQuoteWSPortType;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -18,20 +20,20 @@ public class Model extends Subject {
 
     // Class attributes
     private List fieldNamesList;
-    private ArrayList<ArrayList<Object>> SQData = new ArrayList<>();
-    private ArrayList<ArrayList<String[]>> SQHistory = new ArrayList<>();
-    private ArrayList<StockQuote> myStockQuote = new ArrayList<>();
+    private ArrayList<ArrayList<Object>> SQData;
+    private ArrayList<ArrayList<String[]>> SQHistory;
+    private SQServiceAdapter myStockQuote;
 
     // Model.Model Constructor
     public Model() {
+        SQData = new ArrayList<>();
+        SQHistory = new ArrayList<>();
+        myStockQuote = new SQServiceAdapter();
 
         // Initialized the web service for stock quote
         System.out.println("Model initialized");
 
-        myStockQuote.add(new SQServiceAdapter());
-        myStockQuote.add(new SQTimeLapseAdapter());
-
-        fieldNamesList = myStockQuote.get(1).getFieldNames();
+        fieldNamesList = myStockQuote.getFieldNames();
 
         Timer updateTimer = new Timer();
 
@@ -46,20 +48,20 @@ public class Model extends Subject {
     } //Model.Model()
 
     // Add stock quote data into the table
-    public void addData(String symbol, int type){
-        List aList = myStockQuote.get(type).getQuote(symbol);
+    public void addData(String symbol, SQType type){
+        List aList = myStockQuote.getQuote(symbol, type);
 
         if (isAdded(aList.get(0).toString())){
             //will not add a monitor if it already exists
             dialogMessage(0, "Error", "Symbol already exists", 2);
         }
-        else if(aList.get(0).equals("invalid symbol submitted") && type == 1){
+        else if(aList.get(0).equals("invalid symbol submitted") && type == SQType.STOCK_QUOTE_TIMELAPSE_WS){
             //will not add a monitor if there is no such symbol in time lapse
             dialogMessage(0, "Error", "Symbol does not exist\n" +
                     "Available stock quote time lapse symbols are:\n" +
                     "RIO.AX, QAN.AX, ANZ.AX, CBA.AX, BHP.AX, NAB.AX", 2);
         }
-        else if(aList.get(1).equals("Unset") && type == 0) {
+        else if(aList.get(1).equals("Unset") && type == SQType.STOCK_QUOTE_WS) {
             //will not add a monitor if there is no such symbol
             dialogMessage(0, "Error", "Symbol does not exist\n" +
                     "For available symbols, please visit\nhttp://www.asx.com.au/asx/research/listedCompanies.do", 2);
@@ -103,8 +105,8 @@ public class Model extends Subject {
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
             String symbolString = SQData.get(i).get(0).toString();
-            int type = (symbolString.contains(".")) ? 1 : 0;
-            List aList = myStockQuote.get(type).getQuote(symbolString);
+            SQType type = (symbolString.contains(".")) ? SQType.STOCK_QUOTE_TIMELAPSE_WS : SQType.STOCK_QUOTE_WS;
+            List aList = myStockQuote.getQuote(symbolString, type);
 
             ArrayList<Object> temp = convertList(aList);
             SQData.set(i, temp);

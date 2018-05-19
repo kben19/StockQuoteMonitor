@@ -1,4 +1,5 @@
 import Model.Model;
+import Model.SQType;
 
 
 /**
@@ -46,7 +47,7 @@ class Controller implements java.awt.event.ActionListener{
     // Add stock quote data
     private void addMonitor() {
         System.out.println("Controller: Adding a monitor");
-        model.addData(view.getTextField(), 0);
+        model.addData(view.getTextField(), SQType.STOCK_QUOTE_WS);
     }//addMonitor
 
     // Remove stock quote data
@@ -63,7 +64,7 @@ class Controller implements java.awt.event.ActionListener{
 
     private void addTimeLapse(){
         System.out.println("Controller: Adding a time lapse monitor");
-        model.addData(view.getTextField(), 1);
+        model.addData(view.getTextField(), SQType.STOCK_QUOTE_TIMELAPSE_WS);
     }
 
     private void viewChart(){
