@@ -1,18 +1,14 @@
 package Model;
 
-/*
- * authors: Andre Christian & Kelvin Benzali
- * last modified: 6 May 2018
- */
-
 import ObserverPackage.Subject;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * authors: Andre Christian & Kelvin Benzali
+ */
 public class Model extends Subject {
     // constants
     private final int SQHISTORY_LIMIT = 10;
@@ -103,11 +99,13 @@ public class Model extends Subject {
     }// removeData()
 
     // Update the entire stock quote data table
-    public void updateData(){
+    private void updateData(){
         System.out.println("Model     : Updating monitors");
         for (int i = 0; i < SQData.size(); i++){
             String symbolString = SQData.get(i).get(0);
             SQType type = (symbolString.contains(".")) ? SQType.STOCK_QUOTE_TIMELAPSE_WS : SQType.STOCK_QUOTE_WS;
+
+            //update if monitory type is time lapse or when 5 minutes has passed
             if (type == SQType.STOCK_QUOTE_TIMELAPSE_WS || WSUpdateCounter == WS_UPDATE_DURATION) {
                 List<String> aList = myStockQuote.getQuote(symbolString, type);
 

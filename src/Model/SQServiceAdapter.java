@@ -1,14 +1,13 @@
 package Model;
 
-/**
- * Created by benzali on 5/15/2018.
- */
-
 import stockquoteservice.*;
 import stockquotetimelapse.StockQuoteTimeLapseService;
 import stockquotetimelapse.StockQuoteTimeLapseServicePortType;
 import java.util.List;
 
+/**
+ * authors: Andre Christian & Kelvin Benzali
+ */
 public class SQServiceAdapter {
 
     private StockQuoteWSPortType mySQWSPort;
@@ -21,7 +20,7 @@ public class SQServiceAdapter {
         mySQTimeLapsePort = mySQTimeLapse.getStockQuoteTimeLapseServiceHttpSoap11Endpoint();
     }
 
-    public List getFieldNames(){
+    public List<String> getFieldNames(){
         return mySQTimeLapsePort.getFieldNames().getReturn();
     }
 
