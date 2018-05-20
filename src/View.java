@@ -8,6 +8,7 @@ import ObserverPackage.Observer;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.ListSelectionModel;
 import java.util.List;
@@ -33,12 +34,16 @@ class View implements Observer {
     private CategoryPlot myPlot;
     private int selectedDataIndex;
     private String[][] data;
+    private MyColorCellRenderer myRenderer;
+    private ArrayList<Color> rowColorList;
 
     // View constructor
     View(Model aModel) {
         System.out.println("View initialized");
         stockMouseListener = new StockMouseListener();
         selectedDataIndex = -1;
+
+        rowColorList = new ArrayList<>();
 
         //local attributes
         frame = new Frame("Stock Quote Service");
@@ -95,6 +100,12 @@ class View implements Observer {
                 return false;
             }
         });
+
+        myRenderer = new MyColorCellRenderer();
+        for (int i = 0; i < fieldNames.size(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(myRenderer);
+        }
+
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    //allow only one selection at a time
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
@@ -192,6 +203,18 @@ class View implements Observer {
         viewMonitorButton.addActionListener(controller);
     } //addController()
 
+    public void addRowColor() {
+        rowColorList.add(Color.WHITE);
+    }
+
+    public void setRowColor(int index, Color c) {
+        rowColorList.set(index, c);
+    }
+
+    public Color getRowColor(int index) {
+        return rowColorList.get(index);
+    }
+
     // Function called every time observers receive update to the selected chart
     public void updateChart(ArrayList<ArrayList<String[]>> anArray) {
         DefaultCategoryDataset aDataset = new DefaultCategoryDataset();
@@ -234,7 +257,11 @@ class View implements Observer {
         if(data.length == prevData.length) {
             for (int i = 0; i < data.length; i++) {
                 if(Double.parseDouble(data[i][1]) > Double.parseDouble(prevData[i][1])) {
-                    //change color
+                    setRowColor(i, Color.GREEN);
+                } else if(Double.parseDouble(data[i][1]) < Double.parseDouble(prevData[i][1])) {
+                    setRowColor(i, Color.RED);
+                } else {
+                    setRowColor(i, Color.WHITE);
                 }
             }
         }
@@ -268,4 +295,18 @@ class View implements Observer {
             updateButtonVisibility(viewMonitorButton);
         }
     }//StockMouseListener
+
+    public class MyColorCellRenderer extends DefaultTableCellRenderer {
+        public MyColorCellRenderer() {
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            c.setBackground(getRowColor(row));
+
+            return c;
+        }
+    }
 } //View

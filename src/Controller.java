@@ -47,6 +47,7 @@ class Controller implements java.awt.event.ActionListener{
     // Add stock quote data
     private void addMonitor() {
         System.out.println("Controller: Adding a monitor");
+        view.addRowColor();
         model.addData(view.getTextField(), SQType.STOCK_QUOTE_WS);
     }//addMonitor
 
