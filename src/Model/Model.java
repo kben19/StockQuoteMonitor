@@ -2,7 +2,6 @@ package Model;
 
 import ObserverPackage.Subject;
 
-import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -43,7 +42,7 @@ public class Model extends Subject {
                 WSUpdateCounter += 5;
                 updateData();   // Update data regularly
             }
-        }, 5000, 5000); //set a timer to run upda te every 5 seconds
+        }, 5000, 5000); //set a timer to run update every 5 seconds
 
     } //Model.Model()
 

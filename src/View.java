@@ -33,7 +33,7 @@ class View implements Observer {
     private JFreeChart myChart;
     private CategoryPlot myPlot;
     private int selectedDataIndex;
-    private String[][] data;
+    private String[][] data = new String[][]{};
     private MyColorCellRenderer myRenderer;
     private ArrayList<Color> rowColorList;
 
@@ -203,16 +203,26 @@ class View implements Observer {
         viewMonitorButton.addActionListener(controller);
     } //addController()
 
+    //Add new item into row color list
     public void addRowColor() {
         rowColorList.add(Color.WHITE);
     }
 
+    //Row color mutator
     public void setRowColor(int index, Color c) {
         rowColorList.set(index, c);
     }
 
+    //Row color accessor
     public Color getRowColor(int index) {
         return rowColorList.get(index);
+    }
+
+    //Remove a row color item
+    public void removeRowColor(int index) {
+        if (index < rowColorList.size()) {
+            rowColorList.remove(index);
+        }
     }
 
     // Function called every time observers receive update to the selected chart
@@ -254,6 +264,7 @@ class View implements Observer {
             model.addRow(data[i]);
         }
 
+        //Check the data changes
         if(data.length == prevData.length) {
             for (int i = 0; i < data.length; i++) {
                 if(Double.parseDouble(data[i][1]) > Double.parseDouble(prevData[i][1])) {
@@ -276,6 +287,11 @@ class View implements Observer {
     @Override
     public void showDialog(String title, String message, int type){
         System.out.println("View      : Show message dialog");
+        //If error message, then remove the excessive color list item
+        if (title.equals("Error")) {
+            rowColorList.remove(rowColorList.size()-1);
+        }
+
         JOptionPane.showMessageDialog(frame, message, title, type);
     }// showDialog
 
@@ -296,6 +312,7 @@ class View implements Observer {
         }
     }//StockMouseListener
 
+    //Table row color renderer
     public class MyColorCellRenderer extends DefaultTableCellRenderer {
         public MyColorCellRenderer() {
         }
@@ -304,9 +321,9 @@ class View implements Observer {
                                                        boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            c.setBackground(getRowColor(row));
+            c.setBackground(getRowColor(row));  //Set the cell color
 
             return c;
         }
-    }
+    }//MyColorCellRenderer
 } //View

@@ -35,9 +35,11 @@ public class SQServiceAdapter {
             }
         } else {
             quoteData = mySQTimeLapsePort.getStockQuote(symbol);
-            for (int i : new int[]{1, 4, 5, 6, 7}) {
-                Double newVal = Double.parseDouble(quoteData.get(i)) / 100;
-                quoteData.set(i, newVal.toString());
+            if (quoteData.size() > 1) {
+                for (int i : new int[]{1, 4, 5, 6, 7}) {
+                    Double newVal = Double.parseDouble(quoteData.get(i)) / 100;
+                    quoteData.set(i, newVal.toString());
+                }
             }
         }
 

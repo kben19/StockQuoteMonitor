@@ -60,14 +60,18 @@ class Controller implements java.awt.event.ActionListener{
         else if (view.getSelectedRow() < view.getSelectedDataIndex()){
             view.setSelectedDataIndex(view.getSelectedDataIndex()-1);
         }
+        view.removeRowColor(view.getSelectedRow());
         model.removeData(view.getSelectedRow());
     }//removeMonitor
 
+    // Add stock quote time lapse data
     private void addTimeLapseMonitor(){
         System.out.println("Controller: Adding a time lapse monitor");
+        view.addRowColor();
         model.addData(view.getTextField(), SQType.STOCK_QUOTE_TIMELAPSE_WS);
     }
 
+    // View chart of the selected row
     private void viewChart(){
         System.out.println("Controller: View the selected monitor chart");
         view.setSelectedDataIndex(view.getSelectedRow());
