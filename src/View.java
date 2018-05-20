@@ -314,8 +314,6 @@ class View implements Observer {
 
     //Table row color renderer
     public class MyColorCellRenderer extends DefaultTableCellRenderer {
-        public MyColorCellRenderer() {
-        }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                        boolean hasFocus, int row, int column) {
