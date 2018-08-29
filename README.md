@@ -1,6 +1,6 @@
 # Stock Quote Monitor Application
-Stock Quote Monitor applcation to monitor stock quote data by inserting stock 
-symbol to the program. The program obtains data from StockQuoteWS web service 
+Stock Quote Monitor application to monitor stock quote data by inserting a stock 
+symbol into the program. The program obtains data from StockQuoteWS web service 
 and will show this information in an appropriate format to the user.
 
 ## Team Members
